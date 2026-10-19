@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'ui/pantalla_principal.dart';
-//
-void main() {
+import 'data/almacen_local.dart'; 
+
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AlmacenLocal().calentar(); // FIX
   runApp(const NexaSoftApp());
 }
 

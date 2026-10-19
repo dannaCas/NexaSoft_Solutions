@@ -7,8 +7,23 @@ class AlmacenLocal {
   final prefs = SharedPreferencesAsync();
   final clave = 'nexasoft_incidencias_v1';
 
+  Future<void> calentar() async {
+    try {
+      await prefs.getString('__warmup__');
+    } catch (_) {
+    }
+  }
+
   Future<List<Incidencia>> leer() async {
-    final guardadas = await prefs.getString(clave);
+    
+    String? guardadas;
+    try {
+      guardadas = await prefs.getString(clave);
+    } catch (_) {
+      guardadas = null;
+    }
+
+    guardadas ??= await prefs.getString(clave);
     final texto = guardadas ??
         await rootBundle.loadString('assets/data/incidencias.json');
     final lista = jsonDecode(texto) as List<dynamic>;

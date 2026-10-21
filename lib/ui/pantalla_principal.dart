@@ -42,6 +42,12 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
     return const Color(0xFFAC4052);
   }
 
+  Color colorPrioridad(String prioridad) {
+    if (prioridad == 'Baja') return const Color(0xFF31E8D8);
+    if (prioridad == 'Alta') return const Color(0xFFE8315C);
+    return const Color(0xFFD19E56);
+  }
+
   Widget resumen(String etiqueta, String valor, IconData icono) {
     return Expanded(
       child: Card(
@@ -186,10 +192,31 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text('${item.id}  ·  ${item.cliente}'),
-                                              const SizedBox(height: 6),
+                                              const SizedBox(height: 20),
                                               Text(item.estado, style: TextStyle(
                                                 color: colorEstado(item.estado), fontWeight: FontWeight.bold,
                                               )),
+                                              const SizedBox(height: 5),
+                                              Container(padding:const EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                  vertical: 5,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: colorPrioridad(item.prioridad).withValues(alpha: 0.15),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                    color: colorPrioridad(item.prioridad).withValues(alpha: 0.4),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Prioridad: ${item.prioridad}',
+                                                  style: TextStyle(
+                                                    color: colorPrioridad(
+                                                        item.prioridad),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              )
                                             ],
                                           ),
                                         ),

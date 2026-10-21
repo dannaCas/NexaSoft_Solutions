@@ -13,14 +13,22 @@ class PantallaPrincipal extends StatefulWidget {
 
 class _PantallaPrincipalState extends State<PantallaPrincipal> {
   final GestorIncidencias g = GestorIncidencias();
+  final TextEditingController buscadorController = TextEditingController();
   bool cargando = true;
   String? error;
   String busqueda = '';
+  String filtroEstado = 'Todos';
+  String filtroPrioridad = 'Todas';
 
   @override
   void initState() {
     super.initState();
     cargar();
+  }
+
+  void dispose() {
+    buscadorController.dispose();
+    super.dispose();
   }
 
   Future<void> cargar() async {
@@ -90,7 +98,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
 
   @override
   Widget build(BuildContext context) {
-    final items = g.buscar(busqueda);
+    final items = g.buscar(busqueda, filtroEstado, filtroPrioridad);
     return Scaffold(
       appBar: AppBar(
         title: const Text('NexaSoft | Incidencias'),
@@ -157,6 +165,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 5),
                           child: TextField(
+                            controller: buscadorController,
                             decoration: const InputDecoration(
                               labelText: 'Buscar incidencias',
                               hintText: 'Ejemplo: WiFi, correo, pantalla',
@@ -165,12 +174,76 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                             ),
                             onChanged: (texto) => setState(() => busqueda = texto),
                           ),
+                          
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('${items.length} registros', style: const TextStyle(color: Colors.black54)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 17, vertical: 5),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: filtroEstado,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Estado',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                  items: [
+                                    'Todos',
+                                    'Pendiente',
+                                    'En proceso',
+                                    'Resuelta'
+                                  ]
+                                      .map((e) => DropdownMenuItem(
+                                          value: e, child: Text(e)))
+                                      .toList(),
+                                  onChanged: (v) => setState(
+                                      () => filtroEstado = v ?? 'Todos'),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: filtroPrioridad,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Prioridad',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                  items: ['Todas', 'Baja', 'Media', 'Alta']
+                                      .map((p) => DropdownMenuItem(
+                                          value: p, child: Text(p)))
+                                      .toList(),
+                                  onChanged: (v) => setState(
+                                      () => filtroPrioridad = v ?? 'Todas'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 4),
+                          child: Row(
+                            children: [
+                              Text('${items.length} registros',
+                                  style:
+                                      const TextStyle(color: Colors.black54)),
+                              const Spacer(),
+                              TextButton.icon(
+                                onPressed: () {
+                                  buscadorController.clear();
+                                  setState(() {
+                                    busqueda = '';
+                                    filtroEstado = 'Todos';
+                                    filtroPrioridad = 'Todas';
+                                  });
+                                },
+                                icon: const Icon(Icons.clear_all, size: 18),
+                                label: const Text('Limpiar filtros'),
+                              ),
+                            ],
                           ),
                         ),
                         Expanded(
